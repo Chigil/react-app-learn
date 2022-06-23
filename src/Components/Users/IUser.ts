@@ -8,6 +8,7 @@ export interface IAddress {
     lng: string;
   }
 }
+
 export interface ICompany  {
   name: string;
   catchPhrase: string;

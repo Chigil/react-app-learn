@@ -1,8 +1,8 @@
-import React, { ChangeEvent, FormEvent, useState } from 'react';
-import { USERS } from './users';
+import React, { ChangeEvent, FormEvent, useMemo, useState } from 'react';
 import { IUser } from './IUser';
+import http from '../../http';
 
-const initialValue:IUser = {
+const initialValue: IUser = {
   name: '',
   username: '',
   email: '',
@@ -12,24 +12,41 @@ const initialValue:IUser = {
 
 const UserCards = () => {
   const [showUserForm, setShowUserForm] = useState(false);
-  const [users, setUsers] = useState(USERS);
+  const [users, setUsers] = useState<IUser[]>([]);
   const [value, setValue] = useState<IUser>(initialValue);
-  // const [searched, setSearched] = useState();
+  const [search, setSearch] = useState('');
 
-  const onSearch = (event: ChangeEvent<HTMLInputElement>) => {
-    setUsers(users.filter((user) => user.name.toLowerCase().includes(event.target.value.toLowerCase())));
-    // setSearched();
-  };
+  const searchedUser = useMemo(() => {
+    if (search) {
+      return users.filter((user) => user.name.toLowerCase().includes(search.toLowerCase()));
+    }
+    return users;
+  }, [search, users]);
 
   const onChange = (event: ChangeEvent<HTMLInputElement>) => {
     const field = event.target.id;
     setValue({ ...value, [field]: event.target.value });
   };
 
-  const addUser = (event:FormEvent<HTMLFormElement>) => {
+  const getUsers = async () => {
+    http.get('users').then(res => {
+      setUsers(res.data);
+    }).catch(err => console.log(err));
+    // const users:{ data: IUser[]} = await http.get('users');
+    // setUsers(users.data);
+  };
+
+  const addUser = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setUsers([ ...users, value]);
+    setUsers([...users, value]);
     setValue(initialValue);
+  };
+
+  const deleteUser = (id?: number) => {
+    const isDelete = confirm('Really delete this user?');
+    if (isDelete) {
+      setUsers(users.filter(user => user.id !== id));
+    }
   };
 
   return (
@@ -40,9 +57,10 @@ const UserCards = () => {
         <input type="text"
                className="form-control"
                placeholder="Name"
-               onChange={(event) => onSearch(event)}
+               onChange={(event) => setSearch(event.target.value)}
         />
       </div>
+      <button className="btn btn-primary mb-5 mx-5" onClick={() => getUsers()}>Fetch user</button>
       <button className="btn btn-success mb-5" onClick={() => setShowUserForm(!showUserForm)}>Add user</button>
       {
         showUserForm &&
@@ -54,7 +72,7 @@ const UserCards = () => {
                      className="form-control"
                      placeholder={`Input user ${field}`}
                      id={field}
-                     value={value[field as keyof Omit <IUser, 'id' | 'address' |'company'>]}
+                     value={value[field as keyof Omit<IUser, 'id' | 'address' | 'company'>]}
                      onChange={(event) => onChange(event)}
               />
             </div>
@@ -63,7 +81,7 @@ const UserCards = () => {
         </form>
       }
       <div className="row row-cols-1 row-cols-md-3 g-4">
-        {users.map(user =>
+        {searchedUser.map(user =>
           <div className="col" key={user.id}>
             <div className="card h-100">
               <div className="card-body">
@@ -73,7 +91,9 @@ const UserCards = () => {
                 <p className="card-text">Company: {user.company?.name}</p>
               </div>
               <div className="card-footer">
-                <small className="text-muted">ACTION</small>
+                <small className="text-muted">
+                  <button className="btn btn-danger" onClick={() => deleteUser(user.id)}>Delete</button>
+                </small>
               </div>
             </div>
           </div>
