@@ -1,6 +1,8 @@
-import React, { ChangeEvent, FormEvent, useMemo, useState } from 'react';
+import React, { ChangeEvent, FormEvent, useEffect, useMemo, useState } from 'react';
 import { IUser } from './IUser';
 import http from '../../http';
+import Spinner from '../Spinner/Spinner';
+import { Link } from 'react-router-dom';
 
 const initialValue: IUser = {
   name: '',
@@ -16,6 +18,10 @@ const UserCards = () => {
   const [value, setValue] = useState<IUser>(initialValue);
   const [search, setSearch] = useState('');
 
+  useEffect(() => {
+    getUsers();
+  },[]);
+
   const searchedUser = useMemo(() => {
     if (search) {
       return users.filter((user) => user.name.toLowerCase().includes(search.toLowerCase()));
@@ -28,13 +34,14 @@ const UserCards = () => {
     setValue({ ...value, [field]: event.target.value });
   };
 
-  const getUsers = async () => {
+  const getUsers = () => {
     http.get('users').then(res => {
       setUsers(res.data);
     }).catch(err => console.log(err));
     // const users:{ data: IUser[]} = await http.get('users');
     // setUsers(users.data);
   };
+
 
   const addUser = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -60,7 +67,6 @@ const UserCards = () => {
                onChange={(event) => setSearch(event.target.value)}
         />
       </div>
-      <button className="btn btn-primary mb-5 mx-5" onClick={() => getUsers()}>Fetch user</button>
       <button className="btn btn-success mb-5" onClick={() => setShowUserForm(!showUserForm)}>Add user</button>
       {
         showUserForm &&
@@ -81,23 +87,28 @@ const UserCards = () => {
         </form>
       }
       <div className="row row-cols-1 row-cols-md-3 g-4">
-        {searchedUser.map(user =>
-          <div className="col" key={user.id}>
-            <div className="card h-100">
-              <div className="card-body">
-                <h5 className="card-title">{user.name}</h5>
-                <p className="card-text">Email: {user.email}</p>
-                <p className="card-text">Phone: {user.phone}</p>
-                <p className="card-text">Company: {user.company?.name}</p>
-              </div>
-              <div className="card-footer">
-                <small className="text-muted">
-                  <button className="btn btn-danger" onClick={() => deleteUser(user.id)}>Delete</button>
-                </small>
-              </div>
-            </div>
-          </div>
-        )}
+        {
+          users.length
+            ?
+            searchedUser.map(user =>
+              <div className="col" key={user.id}>
+                <div className="card h-100">
+                  <div className="card-body">
+                    <h5 className="card-title"><Link to={`users/${user.id?.toString()}`}>{user.name}</Link></h5>
+                    <p className="card-text">Email: {user.email}</p>
+                    <p className="card-text">Phone: {user.phone}</p>
+                    <p className="card-text">Company: {user.company?.name}</p>
+                  </div>
+                  <div className="card-footer">
+                    <small className="text-muted">
+                      <button className="btn btn-danger" onClick={() => deleteUser(user.id)}>Delete</button>
+                    </small>
+                  </div>
+                </div>
+              </div>)
+            :
+            <Spinner/>
+        }
       </div>
     </div>
   );

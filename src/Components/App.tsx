@@ -1,12 +1,17 @@
 import React from 'react';
 import './App.css';
-import UserCards from './Users/UserCards';
+import NavBar from './NavBar/NavBar';
+import { BrowserRouter } from 'react-router-dom';
+import AppRoutes from './AppRoutes';
 
 function App() {
   return (
-    <div className="App">
-      <UserCards/>
-    </div>
+    <BrowserRouter>
+      <div className="App">
+        <NavBar/>
+        <AppRoutes/>
+      </div>
+    </BrowserRouter>
   );
 }
 
