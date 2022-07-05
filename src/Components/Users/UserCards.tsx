@@ -1,7 +1,6 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { IUser } from './IUser';
 import { Link } from 'react-router-dom';
-import Context from '../../Context/context';
 
 const UserCards = (
   {
