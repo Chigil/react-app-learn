@@ -19,13 +19,11 @@ function App() {
   const [openModal, setOpenModal] = useState(false);
   return (
     <Context.Provider value={{isAuth, setIsAuth, setOpenModal}}>
-      <BrowserRouter>
         <div className="App">
           <NavBar setOpenModal={setOpenModal}/>
           <AppRoutes/>
           <Modal openModal={openModal} setOpenModal={setOpenModal} />
         </div>
-      </BrowserRouter>
     </Context.Provider>
   );
 }

@@ -5,10 +5,10 @@ import { Link } from 'react-router-dom';
 const UserCards = (
   {
     users,
-    deleteUser
+    // deleteUser
   }: {
     users: IUser[],
-    deleteUser: (id?: number) => void
+    // deleteUser: (id?: number) => void
   }) => {
   return (
     <div className="row row-cols-1 row-cols-md-3 g-4">
@@ -29,7 +29,7 @@ const UserCards = (
               <small className="text-muted">
                 <button
                   className="btn btn-danger"
-                  onClick={() => deleteUser(user.id)}
+                  // onClick={() => deleteUser(user.id)}
                 >
                   Delete
                 </button>
