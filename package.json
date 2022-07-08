@@ -2,7 +2,7 @@
   "name": "react-app-learn",
   "version": "0.1.0",
   "private": true,
-  "home": "https://chigil.github.io/react-app-learn/",
+  "homepage": "https://chigil.github.io/react-app-learn/",
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.3.0",
@@ -29,6 +29,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "lint": "eslint .",
+    "predeploy": "npm run build",
     "deploy": "gh-pages -d build"
   },
   "browserslist": {
